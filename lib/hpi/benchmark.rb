@@ -1,3 +1,4 @@
+require 'hpi'
 require 'socket'
 
 module HPI
@@ -27,14 +28,28 @@ module HPI
     end
 
     def run
-      Dir.chdir(scenario.source_dir) do
+      scenario.source_dir do
         err ">> Starting %s on port %d running %s", server, port, scenario
         server.run(scenario.app, port)
+
         err ">> Server running, benchmarking sessions"
-        # replace with funky benchmarking
-        system "autobench --host1 127.0.0.1 --uri1 / --low_rate 20 " \
-          "--high_rate 200 --rate_step 20 --num_call 10 --num_conn " \
-          "5000 --timeout 5 --file results.tsv"
+        httperf    = HTTPerf.new("127.0.0.1", port)
+
+        # unhardcode
+        sessions   = 20
+        calls      = 4
+        think_time = 0
+        httperf.burst_length = 5
+        httperf.connections  = 20
+        httperf.calls        = 20
+
+        if scenario.step_file?
+          httperf.session_file(scenario.step_file, sessions, think_time)
+        else
+          httperf.session(sessions, calls, think_time)
+        end
+
+        httperf.run
         server.stop
       end
     end

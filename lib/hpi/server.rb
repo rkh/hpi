@@ -1,3 +1,4 @@
+require 'hpi'
 require 'rack/handler'
 require 'open-uri'
 

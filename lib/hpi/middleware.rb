@@ -1,3 +1,5 @@
+require 'hpi'
+
 module HPI
   # This middleware is used to check if the server is running.
   class Middleware

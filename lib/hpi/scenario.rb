@@ -1,3 +1,4 @@
+require 'hpi'
 require 'rack/builder'
 
 module HPI
@@ -19,8 +20,16 @@ module HPI
       Rack::Builder.parse_file('config.ru').first
     end
 
+    def step_file
+      File.expand_path('steps', root)
+    end
+
+    def step_file?
+      File.exist? step_file
+    end
+
     def sinatra_app
-      ruby_files = Dir['*.rb']
+      ruby_files = Dir["#{source_dir}/*.rb"]
       if ruby_files.size == 1
         load ruby_files.first
         Sinatra::Application

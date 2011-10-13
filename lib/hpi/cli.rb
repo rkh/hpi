@@ -1,3 +1,5 @@
+require 'hpi'
+
 module HPI
   class CLI
     attr_accessor :stdout, :stderr, :args, :method

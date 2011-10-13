@@ -1,5 +1,6 @@
 group :direct_dependencies do
   gem 'rack', '~> 1.3'
+  gem 'backports'
 end
 
 group :servers do
@@ -9,7 +10,7 @@ group :servers do
 end
 
 group :blog do
-  gem 'sinatra'
+  gem 'sinatra', "~> 1.2.7"
   gem 'slim'
   gem 'sass'
   gem 'rdiscount'

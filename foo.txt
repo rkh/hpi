@@ -1,0 +1,29 @@
+httperf --hog --client=0/1 --server=127.0.0.1 --port=49624 --uri=/ --send-buffer=4096 --recv-buffer=16384 --method=GET --wsess=100,5,1.000 --burst-length=5
+Maximum connect burst length: 1
+
+Total: connections 15 requests 44 replies 14 test-duration 21.555 s
+
+Connection rate: 0.7 conn/s (1437.0 ms/conn, <=2 concurrent connections)
+Connection time [ms]: min 1501.9 avg 1513.5 max 1622.2 median 1502.5 stddev 31.7
+Connection time [ms]: connect 0.1
+Connection length [replies/conn]: 1.000
+
+Request rate: 2.0 req/s (489.9 ms/req)
+Request size [B]: 140.0
+
+Reply rate [replies/s]: min 0.6 avg 0.7 max 0.8 stddev 0.1 (4 samples)
+Reply time [ms]: response 9.7 transfer 1503.1
+Reply size [B]: header 184.0 content 46.0 footer 0.0 (total 230.0)
+Reply status: 1xx=0 2xx=14 3xx=0 4xx=0 5xx=0
+
+CPU time [s]: user 3.75 system 17.41 (user 17.4% system 80.7% total 98.1%)
+Net I/O: 0.4 KB/s (0.0*10^6 bps)
+
+Errors: total 12 client-timo 0 socket-timo 0 connrefused 0 connreset 12
+Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
+
+Session rate [sess/s]: min 0.00 avg 0.09 max 0.20 stddev 0.12 (2/2)
+Session: avg 5.00 connections/session
+Session lifetime [s]: 7.6
+Session failtime [s]: 0.0
+Session length histogram: 0 0 0 0 0 2
