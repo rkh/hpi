@@ -31,25 +31,32 @@ module HPI
       scenario.source_dir do
         err ">> Starting %s on port %d running %s", server, port, scenario
         server.run(scenario.app, port)
+        
+        err ">> Pre-heating application"
+        heater = HTTPerf.new("127.0.0.1", port)
+        heater.session(5, 1000, 0)
+        heater.run
+        err ""
 
-        err ">> Server running, benchmarking sessions"
-        httperf    = HTTPerf.new("127.0.0.1", port)
+        1.upto 50 do |c|
+          sessions   = c == 1 ? c : c*100
+          calls      = 5000 / sessions
+          think_time = 0
 
-        # unhardcode
-        sessions   = 20
-        calls      = 4
-        think_time = 0
-        httperf.burst_length = 5
-        httperf.connections  = 20
-        httperf.calls        = 20
+          err ">> Benchmarking #{sessions} concurrent sessions"
 
-        if scenario.step_file?
-          httperf.session_file(scenario.step_file, sessions, think_time)
-        else
-          httperf.session(sessions, calls, think_time)
+          httperf  = HTTPerf.new("127.0.0.1", port)
+          httperf.burst_length = 1
+
+          if scenario.step_file?
+            httperf.session_file(scenario.step_file, sessions, think_time)
+          else
+            httperf.session(sessions, calls, think_time)
+          end
+
+          err "\n=> #{httperf.run}"
         end
 
-        httperf.run
         server.stop
       end
     end
