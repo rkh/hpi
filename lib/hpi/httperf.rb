@@ -78,7 +78,7 @@ module HPI
     end
 
     def run
-      system command
+      `#{command} 2>&1`[/^Request rate.*/]
     end
 
     def debug?
