@@ -24,14 +24,19 @@ module HPI
     def run(app, port)
       @port, @host = port, '127.0.0.1'
       @app         = Middleware.new(app)
+      setup
       run!
       sleep(0.01) until running?
     end
 
     def running?
       open("http://#{host}:#{port}/__hpi__").read == 'ok'
-    rescue Errno::ECONNREFUSED, OpenURI::HTTPError
+    rescue Errno::ECONNREFUSED, OpenURI::HTTPError, EOFError
       false
+    end
+
+    def setup
+      require name
     end
 
     def stop
@@ -90,7 +95,7 @@ module HPI
 
       def run!
         @server = ::Puma::Server.new(app)
-        server.add_tcp_listener(host, ports)
+        server.add_tcp_listener(host, port)
         server.run
       end
 
@@ -104,12 +109,12 @@ module HPI
 
       def setup
         const_name = name.capitalize
-        require name unless Object.const_defined? const_name
-        Object.const_get(const_name)
+        super unless Object.const_defined? const_name
+        @server = Object.const_get(name.capitalize)
       end
 
       def run!
-        handler = setup::HttpServer
+        handler = @server::HttpServer
         @server = handler.new(app, :listeners => ["#{host}:#{port}"])
         server.start
       end
