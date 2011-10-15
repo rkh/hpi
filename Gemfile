@@ -1,3 +1,5 @@
+source :rubygems
+
 group :direct_dependencies do
   gem 'rack', '~> 1.3'
   gem 'backports'
