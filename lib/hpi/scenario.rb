@@ -12,7 +12,7 @@ module HPI
 
     def source_dir(&block)
       dir = File.expand_path('src', root)
-      block ? Dir.chdir(&block) : dir
+      block ? Dir.chdir(dir, &block) : dir
     end
 
     def rack_app
