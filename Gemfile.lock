@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/evanphx/puma.git
-  revision: 1657f579d7e7408b2b29941836a447ee9a05cdc4
+  revision: b7953adb67959d773358acc226047f19343602cd
   specs:
     puma (0.8.0)
 
@@ -26,14 +26,14 @@ GEM
     kgio (2.6.0)
     multi_json (1.0.3)
     rack (1.3.4)
-    raindrops (0.7.0)
+    raindrops (0.8.0)
     rdiscount (1.6.8)
-    sass (3.1.7)
+    sass (3.1.10)
     sinatra (1.2.7)
       rack (~> 1.1)
       tilt (>= 1.2.2, < 2.0)
-    slim (1.0.2)
-      temple (~> 0.3.3)
+    slim (1.0.3)
+      temple (~> 0.3.4)
       tilt (~> 1.3.2)
     temple (0.3.4)
     thin (1.2.11)
