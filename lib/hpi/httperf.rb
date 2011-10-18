@@ -3,8 +3,8 @@ require 'set'
 
 module HPI
   class HTTPerf
-    OPTIONS  ||= {}
-    DEFAULTS ||= {}
+    OPTIONS  = {}
+    DEFAULTS = {}
 
     def self.add_option(option, argument = option.to_s.tr('_', '-'), default = nil)
       attr_accessor option
