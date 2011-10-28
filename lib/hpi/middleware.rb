@@ -14,8 +14,8 @@ module HPI
 
     def call(env)
       case env['HTTP_X_HPI']
-      when nil, ''  then lock { record(env) }
-      when 'status' then lock { status(env) }
+      when nil, ''  then synchronize { record(env) }
+      when 'status' then synchronize { status(env) }
       end or @app.call(env)
     end
 
@@ -28,7 +28,7 @@ module HPI
     def record(env)
       return unless env['REQUEST_METHOD'] == 'GET'
 
-      lock do
+      synchronize do
         @last_time + 1 >= Time.now ?
           @bursts[@last_entry] << path(env) :
           @last_entry = path(env)
@@ -39,7 +39,7 @@ module HPI
     end
 
     def status(env)
-      status = lock do
+      status = synchronize do
         info = SystemInfo.to_hash.merge 'bursts' => @bursts, 'server' => env['SERVER_SOFTWARE'], 'path' => path(env)
         OkJson.encode("system" => SystemInfo.to_hash, "rack" => info(env), "bursts" => @bursts)
       end
