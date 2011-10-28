@@ -1,7 +1,41 @@
 #!/usr/bin/env ruby
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
-require 'bundler/setup'
-require 'hpi'
-HPI.root = File.expand_path('../..', __FILE__)
-HPI::CLI.run
+# autloading HPI allows us to add lib with the -I options (see below)
+autoload :HPI, 'hpi' unless defined? HPI
+
+# no need to run in development
+ENV['RACK_ENV'] ||= 'production'
+
+if ARGV.any?
+  require 'optparse'
+  op = OptionParser.new
+
+  op.separator ""
+  op.separator "HPI Options:"
+  op.on('-o store', 'File for persistence') { |val| HPI::Store.file = val }
+
+  op.separator ""
+  op.separator "Web Interface Options:"
+  op.on('-e env',     'Rack environment')   { |val| HPI::WebInterface.set :environment, val.to_sym   }
+  op.on('-s server',  'Rack handler')       { |val| HPI::WebInterface.set :server,      val          }
+  op.on('-p port',    'Port to listen on')  { |val| HPI::WebInterface.set :port,        Integer(val) }
+  op.on('-o addr',    'Address to bind to') { |val| HPI::WebInterface.set :bind,        val          }
+
+  op.separator ""
+  op.separator "Ruby Options:"
+  op.on('-I dir',  'add dir to load path') { |val| $LOAD_PATH.unshift(val) }
+  op.on('-r file', 'require file')         { |val| require(val)            }
+
+  op.separator ""
+  op.separator "See README.md for more information."
+  op.parse!(ARGV.dup)
+end
+
+if %w[127.0.0.1 localhost ::1].include? HPI::WebInterface.bind
+  Thread.new do
+    sleep 1 # give the server a heads-up
+    system "open", "http://#{HPI::WebInterface.bind}:#{HPI::WebInterface.port}"
+  end
+end
+
+HPI::WebInterface.run!
