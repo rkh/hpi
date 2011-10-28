@@ -4,7 +4,7 @@ require 'forwardable'
 
 module HPI
   class Store
-    extend SingleForwardable, Lock
+    extend SingleForwardable, Tool::Lock
     def_singleton_delegators :store, :[], :[]=, :abort, :commit, :delete, :fetch
 
     # avoid warnings
@@ -25,7 +25,7 @@ module HPI
     def self.transaction(&block)
       # PStore in 1.8 does not support thread-safe mode
       return yield if transaction?
-      lock do
+      synchronize do
         begin
           @transaction = true
           store.transaction(&block)

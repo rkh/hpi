@@ -3,7 +3,6 @@ require 'tool'
 
 module HPI
   autoload :HTTPerf,      'hpi/httperf'
-  autoload :Lock,         'hpi/lock'
   autoload :Middleware,   'hpi/middleware'
   autoload :OkJson,       'hpi/ok_json'
   autoload :Result,       'hpi/result'
