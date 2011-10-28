@@ -1,3 +1,0 @@
-[submodule "scenarios/blog/src"]
-	path = scenarios/blog/src
-	url = git://github.com/rkh/rkh.im.git

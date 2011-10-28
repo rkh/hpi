@@ -1,10 +1,20 @@
 require 'hpi'
-require 'set'
 
 module HPI
   class HTTPerf
     OPTIONS  = {}
     DEFAULTS = {}
+
+    def self.executable=(value)
+      @executable = value
+    end
+
+    def self.executable
+      @executable = nil unless instance_variable_defined? :@executable
+      @executable ||= `which httperf`.chop
+      fail "#{@executable} is not executable" unless File.executable? @executable
+      @executable
+    end
 
     def self.add_option(option, argument = option.to_s.tr('_', '-'), default = nil)
       attr_accessor option
@@ -47,19 +57,17 @@ module HPI
     add_option :wsess
     add_option :wsesslog
 
-    attr_reader :headers, :failure_codes
-    attr_accessor :httperf
+    attr_writer :executable
 
-    def initialize(host, port)
-      DEFAULTS.each { |k, v| public_send("#{k}=", v) }
-      @host, @port   = host, port
-      @headers       = {}
-      @failure_codes = []
-      @httperf       = `which httperf`.chop
+    def initialize(options = {})
+      DEFAULTS.merge(options).each { |k, v| public_send("#{k}=", v) }
+    end
+
+    def executable
+      @executable || HTTPerf.executable
     end
 
     def command
-      fail "httperf not found" unless File.executable? httperf
       OPTIONS.inject(httperf) do |cmd, (option, key)|
         case value = public_send(option)
         when nil, false then cmd
@@ -69,20 +77,10 @@ module HPI
       end
     end
 
-    def session(sessions, calls, think_time)
-      self.wsess = [sessions, calls, think_time].join(",")
-    end
-
-    def session_file(step_file, sessions, think_time)
-      self.wsesslog = [sessions, think_time, step_file].join(",")
-    end
-
     def run
-      `#{command} 2>&1`[/^Request rate.*/]
-    end
-
-    def debug?
-      debug_level? and debug_level > 0
+      raw = `#{command}`
+      fail "`#{command}` failed\n\n#{raw}\n" if $?.exitstatus != 0
+      Result.parse(raw)
     end
   end
 end
